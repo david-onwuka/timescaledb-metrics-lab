@@ -1,0 +1,23 @@
+services:
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.18.0
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:restoretest@host.docker.internal:55433/postgres?sslmode=disable"
+    ports:
+      - "9187:9187"
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres-exporter
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
